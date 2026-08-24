@@ -10,6 +10,7 @@ function authGuard(req, res, next) {
 
     try {
         req.member = jwt.verify(token, process.env.JWT_SECRET);
+        if (req.member.id && !req.member.memberId) req.member.memberId = req.member.id;
         next();
     } catch (error) {
         return res.status(401).json({ message: 'Unauthorized' });

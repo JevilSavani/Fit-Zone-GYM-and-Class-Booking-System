@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/', async (req, res, next) => {
     try {
         const booking = new ClassBooking({
-            memberId: req.member.memberId,
+            memberId: req.member.id || req.member.memberId,
             trainerId: req.body.trainerId,
             className: req.body.className,
             date: req.body.date,
@@ -23,7 +23,7 @@ router.post('/', async (req, res, next) => {
 
 router.get('/my', async (req, res, next) => {
     try {
-        const bookings = await ClassBooking.find({ memberId: req.member.memberId })
+        const bookings = await ClassBooking.find({ memberId: req.member.id || req.member.memberId })
             .populate('memberId', 'name email')
             .populate('trainerId', 'name specialization')
             .sort({ date: 1 });
@@ -41,7 +41,7 @@ router.patch('/:id/status', async (req, res, next) => {
         }
 
         const booking = await ClassBooking.findOneAndUpdate(
-            { _id: req.params.id, memberId: req.member.memberId },
+            { _id: req.params.id, memberId: req.member.id || req.member.memberId },
             { status: req.body.status },
             { new: true, runValidators: true }
         );

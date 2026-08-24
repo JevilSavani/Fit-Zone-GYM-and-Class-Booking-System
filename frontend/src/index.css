@@ -362,3 +362,27 @@ select:focus {
         flex-wrap: wrap;
     }
 }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.stats-grid .admin-stat {
+    display: grid;
+    justify-content: start;
+    gap: 10px;
+    min-height: 130px;
+    padding: 22px;
+    background: #d8e6d2;
+    border: 0;
+}
+
+.stats-grid strong {
+    font: 700 2.5rem 'Space Grotesk', sans-serif;
+}
+
+.access-denied {
+    text-align: center;
+}

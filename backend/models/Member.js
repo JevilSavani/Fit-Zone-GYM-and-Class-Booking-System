@@ -9,7 +9,8 @@ const memberSchema = new mongoose.Schema(
             type: String,
             enum: { values: ['basic', 'premium', 'platinum'], message: 'Membership type must be basic, premium, or platinum' },
             default: 'basic'
-        }
+        },
+        role: { type: String, enum: ['Member'], default: 'Member' }
     },
     { timestamps: true }
 );

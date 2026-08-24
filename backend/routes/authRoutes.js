@@ -1,13 +1,15 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const Member = require('../models/Member');
+const Trainer = require('../models/Trainer');
+const Admin = require('../models/Admin');
 
 const router = express.Router();
 
-function createAuthResponse(member) {
-    const role = 'Member';
-    const token = jwt.sign({ memberId: member._id.toString(), role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    return { token, member: { id: member._id, name: member.name, email: member.email }, role };
+function createAuthResponse(user) {
+    const role = user.role || (user.specialization ? 'Trainer' : 'Member');
+    const token = jwt.sign({ id: user._id.toString(), role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    return { token, user: { id: user._id, name: user.name, email: user.email }, role };
 }
 
 router.post('/register', async (req, res, next) => {
@@ -27,13 +29,13 @@ router.post('/register', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
     try {
         const email = String(req.body.email || '').trim().toLowerCase();
-        const member = await Member.findOne({ email });
+        const user = await Member.findOne({ email }) || await Trainer.findOne({ email }) || await Admin.findOne({ email });
 
-        if (!member) {
-            return res.status(401).json({ message: 'Authentication failed' });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email' });
         }
 
-        const authData = createAuthResponse(member);
+        const authData = createAuthResponse(user);
 
         return res.status(200).json({
             message: 'Login successful',

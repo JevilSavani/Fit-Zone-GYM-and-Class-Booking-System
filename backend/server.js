@@ -5,10 +5,12 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const requestLogger = require('./middleware/requestLogger');
 const authGuard = require('./middleware/authGuard');
+const roleGuard = require('./middleware/roleGuard');
 const errorHandler = require('./middleware/errorHandler');
 const authRoutes = require('./routes/authRoutes');
 const trainerRoutes = require('./routes/trainerRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -25,7 +27,8 @@ app.get('/api/v1/health', (req, res) => {
 });
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/trainers', trainerRoutes);
-app.use('/api/v1/bookings', authGuard, bookingRoutes);
+app.use('/api/v1/bookings', authGuard, roleGuard('Member'), bookingRoutes);
+app.use('/api/v1/admin', authGuard, roleGuard('Admin'), adminRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ message: 'Route not found' });
